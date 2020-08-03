@@ -1,36 +1,50 @@
 from collections import namedtuple
+
 class Node:
-    def __init__(self, value):
+    def __init__(self, value, r, c):
         self.value = value
         self.active = True
-        self.targets = [self.value * target_matrix[i] for i in range(4)]
-        self.location = namedtuple('Point', ['x','y'] )
+        self.targets = []
+        Position = namedtuple('Position', ['row','col'] )
+        self.location = Position(r,c)
     
     def __repr__(self):
         return str(self.value)    
 
-    #def add_targets(self, board):        
-    #    for i in range(4):            
-    #        self.targets[i] = self.value * target_matrix[i]
+direction_matrix = [-1, 1, 1, -1]
+level =  [[2, 2, 2, 1], [2, 1, 1, 1], [1, 2, 2, 1], [2, 1, 1, 2]]
 
-# clockwise: up, right, down, left
-# multiply matrix by node value to determine target node to assign to targets list
-target_matrix = [-1, 1, 1, -1]
+board = []
 
-level =  [[2, 1, 2, 2], [2, 2, 2, 1], [1, 1, 1, 2], [1, 2, 3, 1] ]
-board = [[Node(col) for col in row] for row in level]
+# Make Board
+for r,row in enumerate(level):
+    board_row = []
+    for c,value in enumerate(row):
+        board_row.append(Node(value, r, c))
+    board.append(board_row)
 
-
-
+# Add Targets to each Node
 for row in board:
     for node in row:
-        print(node, end=" ")
-    print()
+        for i in range(4):            
+            row_displaced = node.location.row + node.value * direction_matrix[i]
+            col_displaced = node.location.col + node.value * direction_matrix[i]
+            if (row_displaced < 0) or (row_displaced > 3) or (col_displaced < 0 ) or (col_displaced > 3):
+                node.targets.append(None)
+            elif i % 2 == 0:                
+                node.targets.append(board[row_displaced][node.location.col])
+            else:                                
+                node.targets.append(board[node.location.row][col_displaced])                        
 
-#for row in board:    
-#    for node in row:
-#        print(node, ":")
-#        for i in range(4):
-#            print(node.targets[i], end=",")
-#        print()
-        
+# Display Node Info
+for row in board:    
+    for node in row:
+        print("----------------")
+        print("Node ({},{}) = [{}] :".format(node.location.row, node.location.col, node))
+        print("----------------")
+        for i, target in enumerate(node.targets):
+            if target is None:
+                print ("Target {}: (NONE)".format(i))                
+            else:
+                print("Target {}: ({},{})".format(i, target.location.row, target.location.col))                   
+    
