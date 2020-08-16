@@ -5,8 +5,8 @@ class Node:
         self.value = value
         self.visited = False
         self.targets = []
-        Position = namedtuple('Position', ['row','col'] )
-        self.location = Position(r,c)
+        Location = namedtuple('Locaton', ['row','col'] )
+        self.location = Location(r,c)
 
     def __repr__(self):
         return str(self.value)
@@ -44,14 +44,20 @@ class Board:
                         print ("Target {}: (NONE)".format(i))
                     else:
                         print("Target {}: ({},{})".format(i, target.location.row, target.location.col))
+                print("----------------")
 
 class Walker:
-    startnode = None
-    def __init__(self, sn):
-        self.startnode = sn
-    def __repr__(self):
-        for target in self.startnode.targets:
-            print(target)
+    current_node = None
+    def __init__(self, start_node):
+        self.current_node = start_node
+    
+    def display(self):
+        print ("Current Node = [{}, {}], with Value of '{}'".format(self.current_node.location.row, self.current_node.location.col, self.current_node.value))
+        for target in self.current_node.targets:
+            if target == None:
+                print("None")
+            else:
+                print("Current Value: {}, Current Target {}".format(target.value, target.location))
 
 direction_matrix = [-1, 1, 1, -1]
 level =  [[2, 2, 2, 1], [2, 1, 1, 1], [1, 2, 2, 1], [2, 1, 1, 2]]
@@ -60,4 +66,4 @@ b = Board(level)
 w = Walker(b.board[3][3])
 
 b.display()
-print(w)
+w.display()
