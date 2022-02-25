@@ -1,89 +1,62 @@
 from collections import namedtuple
+solutions = []
+direction_matrix = [-1, 1, 1, -1]
+level = [[2, 1, 1, 3], [2, 1, 2, 1], [1, 2, 1, 2], [1, 2, 1, 2]]
+board_size = 4
+current_path = []
+all_paths = []
+num_poly_sides = 4
 
 class Node:
     def __init__(self, value, r, c):
         self.value = value
         self.visited = False
         self.targets = []
-        Location = namedtuple('Location', ['row','col'] )
-        self.location = Location(r,c)
-        self.lastdirection = 0
+        Location = namedtuple('Location', ['row', 'col'] )
+        self.location = Location(r, c)
+        self.direction = 0
 
     def __repr__(self):
         return str(self.value)
 
 class Board:
     board = []
-    def __init__(self, levelname):
-        # Make Board
-        for r,row in enumerate(levelname):
+    target_row = 0
+    target_col = 0
+    # Make Board
+    def __init__(self, l):
+        for r,row in enumerate(l):
             board_row = []
-            for c,value in enumerate(row):
+            for c, value in enumerate(row):
                 board_row.append(Node(value, r, c))
             self.board.append(board_row)
-        # Add Targets to each Node
-        for row in self.board:
-            for node in row:
-                for i in range(4):
-                    row_displaced = node.location.row + node.value * direction_matrix[i]
-                    col_displaced = node.location.col + node.value * direction_matrix[i]
-                    if (row_displaced < 0) or (row_displaced > 3) or (col_displaced < 0 ) or (col_displaced > 3):
-                        node.targets.append(None)
-                    elif i % 2 == 0:
-                        node.targets.append(self.board[row_displaced][node.location.col])
-                    else:
-                        node.targets.append(self.board[node.location.row][col_displaced])
 
+		# Add Targets to each Node
+        for r in range(board_size):
+            for c in range(board_size):
+                for i in range(num_poly_sides):  #number of sides of polygon (square in this case, hexagon in hexbon/bee game)
+                    if (i % 2) == 0:
+                        self.target_row = r + self.board[r][c].value * direction_matrix[i]
+                        self.target_col = c
+                    else:
+                        self.target_row = r
+                        self.target_col = c + self.board[r][c].value * direction_matrix[i]
+                    if((self.target_row < 0) or (self.target_row >= board_size) or (self.target_col < 0) or (self.target_col >= board_size)):
+                            self.board[r][c].targets.append(None)
+                    else:
+                        self.board[r][c].targets.append(self.board[self.target_row][self.target_col])
     def display(self):
-        # Display Node Info
         for row in self.board:
             print(*row)
-
-#---------------------------------------------------------------------------------
-
-class Walker:
-    current_node = None
-    current_target = None
-    index = 0
-
-    def __init__(self, start_node):
-        self.current_node = start_node
-        self.current_node.visited = True
-        self.current_target = start_node.targets[self.index]
-    def display(self):
-        print ("Current Node = [{}, {}], with Value of '{}'".format(self.current_node.location.row, self.current_node.location.col, self.current_node.value))
-        for target in self.current_node.targets:
-            if target == None:
-                print("None")
-            else:
-                print("Current Target {}, Current Value: {}".format(target.location, target.value))
-    def scan(self):
-    	print("New Target = {}".format(self.current_node.targets[self.index].location))
-    	if self.current_target == None:
-    		print("None") #pass/return/break
-    	elif self.current_target.visited == True:
-    	    print("Already visited : {}".format(self.current_target.location))
-    	else:
-    	    self.visit()
-    	#self.index += 1
-    	#print("New Target = {}".format(self.current_node.targets[self.index]))
-
-    def visit(self):
-        self.current_node.lastdirection += 1
-        self.current_node = self.current_target #focus on this next...
-        self.current_node.visited = True
-        self.current_target = self.current_node.targets[self.current_node.lastdirection]
-#---------------------------------------------------------------------------------
-
-solutions =[]
-
-direction_matrix = [-1, 1, 1, -1]
-level =  [[2, 2, 2, 1], [2, 1, 1, 1], [1, 2, 2, 1], [2, 1, 1, 2]]
+    def show_targets(self):
+        for r, row in enumerate(self.board):
+            for c, node in enumerate(row):
+                for i in range(num_poly_sides):
+                    if (self.board[r][c].targets[i] != None):
+                        print("Node [{}][{}] -> Target {} : [{}][{}],Value -> {}".format(r, c, i, self.board[r][c].targets[i].location.row, self.board[r][c].targets[i].location.col, self.board[r][c].targets[i].value))
+                    else:
+                        print("NONE")
 
 b = Board(level)
-w = Walker(b.board[3][3])
-
 b.display()
-w.display()
-w.scan()
-w.display()
+b.show_targets()
