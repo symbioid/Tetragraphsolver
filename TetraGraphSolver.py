@@ -6,7 +6,7 @@ direction_matrix = [-1, 1, 1, -1]
 level = [[2, 1, 1], [1, 1, 2], [1, 1, 2]]
 board_size = 3
 #current_path = []
-all_paths = []
+all_paths = [[]]
 num_poly_sides = 4
 
 
@@ -75,24 +75,25 @@ class Walker:
 
     def __init__(self, board, row, col):
         self.start_node = board[row][col] #we do this separate from "current_node" so we know when we backtrack to this, we can backtrack no more
-        self.start_node.visited = True
+        #self.start_node.visited = True
         self.prev_node = self.current_node
         self.current_node = self.start_node
+        self.current_node.visited = True
         self.current_path.append(self.start_node)
 
 
 
     def scan(self):
         print("Scanning:")
-        if (self.current_node.direction >= num_poly_sides):
+        if (self.current_node is not None and self.current_node.direction >= num_poly_sides):
             all_paths.append(copy.deepcopy(self.current_path))
             for a in all_paths:
                 for p in a:
                     print("Printing all Paths: [{}][{}]".format(p.location.row, p.location.col))
-            print("Backtracking...")
+            print("Backtracking")
             self.backtrack()
             self.turn_right()
-        elif ((self.current_node.targets[self.current_node.direction] is None) or (self.current_node.targets[self.current_node.direction].visited)): #THIS HERE
+        elif (self.current_node.targets[self.current_node.direction] is None) or (self.current_node.targets[self.current_node.direction].visited): #THIS HERE
             print("Target null/visited")
             self.turn_right()
             print("Node[{}][{}] Direction -> {}".format(self.current_node.location.row, self.current_node.location.col, self.current_node.direction))
@@ -100,10 +101,7 @@ class Walker:
             self.scan()
         else:
             print("Valid Target. Moving...")
-            self.current_node.visited = True
-            self.current_node = self.current_node.targets[self.current_node.direction]
-            self.current_path.append(copy.deepcopy(self.current_node))
-
+            self.move()
             print("Moved to Node[{}][{}]".format(self.current_node.location.row, self.current_node.location.col))
             print("PATH SO FAR:")
             for s in self.current_path:
@@ -115,9 +113,9 @@ class Walker:
         self.current_node.set_direction(self.current_node.direction + 1)
 
     def move(self):
+        self.current_node.visited = True
         self.prev_node = self.current_node
         self.current_node = self.current_node.targets[self.current_node.direction]
-        self.current_node.visited = True
         self.current_path.append(copy.deepcopy(self.current_node))
         print("CURRENT PATH: {}".format(self.current_path))
 
