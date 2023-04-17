@@ -1,14 +1,12 @@
 from collections import namedtuple
 import copy
 
-
 direction_matrix = [-1, 1, 1, -1]
 level = [[2, 1, 1], [1, 1, 2], [1, 1, 2]]
 board_size = 3
 #current_path = []
 all_paths = [[]]
 num_poly_sides = 4
-
 
 class Node:
     def __init__(self, value, r, c):
