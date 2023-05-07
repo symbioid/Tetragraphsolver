@@ -1,11 +1,10 @@
 from collections import namedtuple
 import copy
 
-
 direction_matrix = [-1, 1, 1, -1]
 level = [[2, 1, 1], [1, 1, 2], [1, 1, 2]]
 board_size = 3
-#current_path = []
+current_path = []
 all_paths = []
 num_poly_sides = 4
 
@@ -53,6 +52,7 @@ class Board:
                         self.board[r][c].targets.append(None)
                     else:
                         self.board[r][c].targets.append(self.board[self.target_row][self.target_col])
+
     def display(self):
         for row in self.board:
             print(*row)
@@ -62,9 +62,9 @@ class Board:
             for c, node in enumerate(row):
                 for i in range(num_poly_sides):
                     if self.board[r][c].targets[i] is not None:
-                        print("Node [{}][{}] -> Target {} : [{}][{}],Value -> {}".format(r, c, i, self.board[r][c].targets[i].location.row, self.board[r][c].targets[i].location.col, self.board[r][c].targets[i].value))
+                        print(f"Node [{r}][{c}] -> Target {i} : [{self.board[r][c].targets[i].location.row}][{self.board[r][c].targets[i].location.col}] = {self.board[r][c].targets[i].value}")
                     else:
-                        print("NONE")
+                        print(f"Node [{r}][{c}] -> Target {i} : [NONE] = -")
         print()
 
 class Walker:
@@ -76,64 +76,70 @@ class Walker:
     def __init__(self, board, row, col):
         self.start_node = board[row][col] #we do this separate from "current_node" so we know when we backtrack to this, we can backtrack no more
         self.start_node.visited = True
-        self.prev_node = self.current_node
         self.current_node = self.start_node
-        self.current_path.append(self.start_node)
+        self.prev_node = self.start_node
+        self.current_path.append(self.current_node)
+
 
 
 
     def scan(self):
         print("Scanning:")
         if (self.current_node.direction >= num_poly_sides):
-            all_paths.append(copy.deepcopy(self.current_path))
+            all_paths.append(self.current_path)
             for a in all_paths:
                 for p in a:
-                    print("Printing all Paths: [{}][{}]".format(p.location.row, p.location.col))
+                    print(f"Printing all Paths: [{p.location.row}][{p.location.col}]")
             print("Backtracking...")
             self.backtrack()
             self.turn_right()
-        elif ((self.current_node.targets[self.current_node.direction] is None) or (self.current_node.targets[self.current_node.direction].visited)): #THIS HERE
+        elif ((self.current_node.targets[self.current_node.direction] is None) or (self.current_node.targets[self.current_node.direction].visited is True)): #THIS HERE
+            print(f"Node[{self.current_node.location.row}][{self.current_node.location.col}] Direction -> {self.current_node.direction}")
             print("Target null/visited")
             self.turn_right()
-            print("Node[{}][{}] Direction -> {}".format(self.current_node.location.row, self.current_node.location.col, self.current_node.direction))
+            print(f"Node[{self.current_node.location.row}][{self.current_node.location.col}] Direction -> {self.current_node.direction}")
             print()
             self.scan()
         else:
-            print("Valid Target. Moving...")
-            self.current_node.visited = True
-            self.current_node = self.current_node.targets[self.current_node.direction]
-            self.current_path.append(copy.deepcopy(self.current_node))
-
-            print("Moved to Node[{}][{}]".format(self.current_node.location.row, self.current_node.location.col))
-            print("PATH SO FAR:")
-            for s in self.current_path:
-                print("[{}],[{}] ".format(s.location.row, s.location.col))
+            self.move()
             self.scan()
 
     def turn_right(self):
+        print(f"current direction {self.current_node.direction}")
         print("Turning Right...")
         self.current_node.set_direction(self.current_node.direction + 1)
+        print(f"current direction {self.current_node.direction}")
 
-    def move(self):
-        self.prev_node = self.current_node
-        self.current_node = self.current_node.targets[self.current_node.direction]
+    def move(self): #vs here?  what?  JFC.
+        print("Valid Target. Preparing to Jump...")
         self.current_node.visited = True
-        self.current_path.append(copy.deepcopy(self.current_node))
-        print("CURRENT PATH: {}".format(self.current_path))
+        self.current_node = self.current_node.targets[self.current_node.direction]
+        self.current_path.append(self.current_node)
+
+        #if self.current_node != self.start_node:
+        print("PATH SO FAR:")
+        for s in self.current_path:
+            print(f"[{s.location.row}],[{s.location.col}]")
+            self.prev_node = self.current_node
+            print(f"CURRENT PATH: {self.current_path}")
 
 
     def backtrack(self):  #Backtrack needs to happen on failure, not just success.
         print("backtracking")
+        self.current_node.visited = False
         self.current_node = self.prev_node
+
         if self.current_node == self.start_node: # AND direction = 4
             print("all paths found")
+            return
         else:
             self.scan()
             return
+
     def walk(self):
         self.scan()
-        self.move()
-        self.walk()
+        #self.move()
+        #self.walk()
 
 
 
