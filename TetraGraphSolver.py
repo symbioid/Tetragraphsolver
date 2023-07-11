@@ -12,7 +12,6 @@ num_poly_sides = 4
 
 
 class Node:
-
     def __init__(self, value, r, c):
         self.last_visited = None
         self.value = value
@@ -22,7 +21,7 @@ class Node:
         self.location = Location(r, c)
         self.direction = 0
         self.all_paths_found_from_here = False
-        self.visited_from_direction
+
 
     def __repr__(self):
         return str(self.value)
@@ -79,12 +78,13 @@ class Board:
             for c, node in enumerate(row):
                 for i in range(num_poly_sides):
                     if self.board[r][c].targets[i] is not None:
+                        node = self.board[r][c]
                         print(
                             "Node [{}][{}] -> Target {} : [{}][{}],Value -> {}"
                             .format(r, c, i,
-                                    self.board[r][c].targets[i].location.row,
-                                    self.board[r][c].targets[i].location.col,
-                                    self.board[r][c].targets[i].value))
+                                    node.targets[i].location.row,
+                                    node.targets[i].location.col,
+                                    node.targets[i].value))
                     else:
                         print("NONE")
         print()
@@ -111,8 +111,9 @@ class Walker:
         if (self.current_node.direction >= num_poly_sides):
             print("End of Path, Appending to list of Paths")
             all_paths.append(copy.deepcopy(self.current_path))
-            #for p in a:
-            #    print(f"Printing all Paths: [{p.location.row}][{p.location.col}]")
+            for idx, p in enumerate(all_paths):
+                for n in p:
+                    print(f"Printing Path[{idx}]: [{n.location.row}][{n.location.col}]\n")
             self.backtrack()
             self.turn_right()
         elif (
@@ -135,7 +136,6 @@ class Walker:
             self.scan()
 
 
-#THIS RIGHT HERE
     def turn_right(self):
         print("Turning Right...")
         self.current_node.set_direction(self.current_node.direction + 1)
@@ -149,13 +149,17 @@ class Walker:
         self.current_node.visited = True
         self.current_path.append(copy.deepcopy(self.current_node))
 
+
+#PREVNODE stuck at [2,2]
     def backtrack(self):
-        print(
-            f"Backtracking to [{self.prev_node.location.row}][{self.prev_node.location.row}]"
-        )
+        self.current_node = self.prev_node
+        print(f"Backtracking to [{self.prev_node.location.row}][{self.prev_node.location.row}]")
         self.current_node = self.prev_node
         a = self.current_path.pop()
-        print(a)
+        print(f"this is node popped: {a.location.row}, {a.location.col}")
+        print(f"After Popping, Path is: ")
+        for idx, n in enumerate(self.current_path):
+            print(f"{idx}: [{n.location.row},{n.location.col}]")
         if self.current_node == self.start_node:  # AND direction = 4
             self.current_node.all_paths_found_from_here = True
             print(f"all paths found from {self.start_node}")
