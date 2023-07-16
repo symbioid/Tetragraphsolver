@@ -113,7 +113,8 @@ class Walker:
             all_paths.append(copy.deepcopy(self.current_path))
             for idx, p in enumerate(all_paths):
                 for n in p:
-                    print(f"Printing Path[{idx}]: [{n.location.row}][{n.location.col}]\n")
+                    print(f"Printing Path[{idx}]: [{n.location.row}][{n.location.col}]")
+            print("\n")
             self.backtrack()
             self.turn_right()
         elif (
@@ -154,12 +155,14 @@ class Walker:
     def backtrack(self):
         self.current_node = self.prev_node
         print(f"Backtracking to [{self.prev_node.location.row}][{self.prev_node.location.row}]")
-        self.current_node = self.prev_node
+        #self.current_node = self.prev_node
+        #if self.current_path:
         a = self.current_path.pop()
         print(f"this is node popped: {a.location.row}, {a.location.col}")
-        print(f"After Popping, Path is: ")
+        print("After Popping, Path is: ")
         for idx, n in enumerate(self.current_path):
             print(f"{idx}: [{n.location.row},{n.location.col}]")
+
         if self.current_node == self.start_node:  # AND direction = 4
             self.current_node.all_paths_found_from_here = True
             print(f"all paths found from {self.start_node}")
