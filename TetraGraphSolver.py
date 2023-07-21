@@ -132,8 +132,8 @@ class Walker:
                 self.current_node.location.row,
                 self.current_node.location.col))
             print("PATH SO FAR:")
-            for s in self.current_path:
-                print("[{}],[{}] ".format(s.location.row, s.location.col))
+            for node in self.current_path:
+                print("[{}],[{}] ".format(node.location.row, node.location.col))
             self.scan()
 
 
