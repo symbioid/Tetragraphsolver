@@ -6,7 +6,6 @@ direction_matrix = [-1, 1, 1, -1]
 level = [[2, 1, 1], [1, 1, 2], [1, 1, 2]]
 row_width = 3
 col_height = 3
-#current_path = []
 all_paths = [[]]
 num_poly_sides = 4
 
@@ -46,7 +45,7 @@ class Board:
             self.board.append(board_row)
 
 
-# Add Targets to each Node
+    # Add Targets to each Node
         for r in range(col_height):
             for c in range(row_width):
                 for i in range(
@@ -80,11 +79,7 @@ class Board:
                     if self.board[r][c].targets[i] is not None:
                         node = self.board[r][c]
                         print(
-                            "Node [{}][{}] -> Target {} : [{}][{}],Value -> {}"
-                            .format(r, c, i,
-                                    node.targets[i].location.row,
-                                    node.targets[i].location.col,
-                                    node.targets[i].value))
+                            "Node f[{r}][{c}] -> Target {i} : [{node.targets[i].location.row}][{node.targets[i].location.col}],Value -> {node.targets[i].value}")
                     else:
                         print("NONE")
         print()
@@ -153,10 +148,8 @@ class Walker:
 
 #PREVNODE stuck at [2,2]
     def backtrack(self):
-        self.current_node = self.prev_node
         print(f"Backtracking to [{self.prev_node.location.row}][{self.prev_node.location.row}]")
-        #self.current_node = self.prev_node
-        #if self.current_path:
+        self.current_node = self.prev_node
         a = self.current_path.pop()
         print(f"this is node popped: {a.location.row}, {a.location.col}")
         print("After Popping, Path is: ")
