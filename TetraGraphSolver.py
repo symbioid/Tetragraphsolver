@@ -132,8 +132,9 @@ class Walker:
 
 
     def turn_right(self):
-        print("Turning Right...")
+        print(f"Turning RIGHT! [{self.current_node.direction}] -> [{self.current_node.direction + 1}]")
         self.current_node.set_direction(self.current_node.direction + 1)
+
 
     def move(self):
         self.prev_node = self.current_node
@@ -148,11 +149,15 @@ class Walker:
 
 #PREVNODE stuck at [2,2]
     def backtrack(self):
-        self.current_node = self.prev_node
         print(f"Current Node is Now : [{self.current_node.location.row}][{self.current_node.location.col}]")
+        self.current_node = self.prev_node
+        self.current_node.visited = False
         if self.current_node != self.start_node :
             print(f"Backtracking to [{self.prev_node.location.row}][{self.prev_node.location.col}]")
+
+            print(f"Current Node is Now : [{self.current_node.location.row}][{self.current_node.location.col}]")
             a = self.current_path.pop()
+
             print(f"this is node popped: {a.location.row}, {a.location.col}")
             print("After Popping, Path is: ")
             for idx, n in enumerate(self.current_path):
