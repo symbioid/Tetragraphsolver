@@ -1,7 +1,6 @@
 from collections import namedtuple
 import copy
 
-#ADDING LAST_VISTED TO NODE DEF SO WE CAN PROPERLY RE_ROTATE TO NEXT POSITION FROM PREVIOUS (INSTEAD OF LOOPING FROM CURRENT)
 direction_matrix = [-1, 1, 1, -1]
 level = [[2, 1, 1], [1, 1, 2], [1, 1, 2]]
 ROW_WIDTH = 3
@@ -108,7 +107,7 @@ class Walker:
             for idx, p in enumerate(all_paths):
                 for n in p:
                     print(f"Printing Path[{idx}]: [{n.location.row}][{n.location.col}]")
-            print("\n")
+                print("\n")
             self.backtrack()
             if self.current_node.all_paths_found_from_here:
                 exit()
@@ -153,19 +152,15 @@ class Walker:
     def backtrack(self):
         print(f"Current Node is Now : [{self.current_node.location.row}][{self.current_node.location.col}]")
         self.current_node = self.prev_node
-        self.current_node.visited = False
         if self.current_node != self.start_node :
-            print(f"Backtracking to [{self.prev_node.location.row}][{self.prev_node.location.col}]")
-
             print(f"Current Node is Now : [{self.current_node.location.row}][{self.current_node.location.col}]")
             a = self.current_path.pop()
-
-            print(f"this is node popped: {a.location.row}, {a.location.col}")
+            print(f"POPPING: : [{a.location.row}], [{a.location.col}]")
             print("After Popping, Path is: ")
             for idx, n in enumerate(self.current_path):
                 print(f"{idx}: [{n.location.row},{n.location.col}]")
-
-        if len(self.current_path) == 0:  # AND direction = 4
+            print(f"Backtracking to - [{self.current_path[-1].location.row}][{self.current_path[-1].location.col}] !")
+        if len(self.current_path) == 0:
             self.current_node.all_paths_found_from_here = True
             print(f"all paths found from [{self.start_node.location.row}][{self.start_node.location.col}]")
             return
