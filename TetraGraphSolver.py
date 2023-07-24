@@ -110,6 +110,8 @@ class Walker:
                     print(f"Printing Path[{idx}]: [{n.location.row}][{n.location.col}]")
             print("\n")
             self.backtrack()
+            if self.current_node.all_paths_found_from_here:
+                exit()
             self.turn_right()
         elif (
                 self.current_node.targets[self.current_node.direction] is None
