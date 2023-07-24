@@ -159,7 +159,7 @@ class Walker:
             print("After Popping, Path is: ")
             for idx, n in enumerate(self.current_path):
                 print(f"{idx}: [{n.location.row},{n.location.col}]")
-            print(f"Backtracking to - [{self.current_path[-1].location.row}][{self.current_path[-1].location.col}] !")
+                print(f"Backtracking to - [{self.current_path[-1].location.row}][{self.current_path[-1].location.col}] !")
         if len(self.current_path) == 0:
             self.current_node.all_paths_found_from_here = True
             print(f"all paths found from [{self.start_node.location.row}][{self.start_node.location.col}]")
