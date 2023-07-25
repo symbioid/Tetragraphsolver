@@ -91,9 +91,7 @@ class Board:
     # Add Targets to each Node
         for r in range(COL_HEIGHT):
             for c in range(ROW_WIDTH):
-                for i in range(
-                        NUM_POLY_SIDES
-                ):  #number of sides of polygon (square in this case, hexagon in hexbon/bee game)
+                for i in range(NUM_POLY_SIDES):
                     if (i % 2) == 0:
                         self.target_row = r + self.board[r][
                             c].value * direction_matrix[i]
@@ -134,7 +132,11 @@ class Walker:
     direction = 0
 
     def __init__(self, board, row, col):
-        '''we do this separate from "current_node" so we know when we backtrack to this, we can backtrack no more'''
+        '''
+        Initializes a walker object with a start node on the given board at the specified row and column.
+        Sets the start node as visited and sets it as the current node.
+        Adds the start node to the current path.
+        '''
         self.start_node = board[row][col]
         self.start_node.visited = True
         self.current_node = self.start_node
@@ -143,6 +145,18 @@ class Walker:
         self.current_path.append(self.start_node)
 
     def scan(self):
+        '''
+        Performs scanning at the current node.
+        - If the current node's direction exceeds the number of polygon sides, the end of the path is reached,
+        and the current path is appended to the list of paths.
+        Then, the walker backtracks, turns right, and scans again.
+        If all paths have already been found from the current node, the program exits.
+        - If the current node's target at the current direction is None or has been visited,
+        the walker turns right and scans again.
+        - If the current node's target at the current direction is valid and unvisited,
+        the walker moves to that target node, updates the current node and path,
+        and scans again.
+        '''
         print(f"Scanning:[{self.current_node.location.row}][{self.current_node.location.col}]: {self.current_node.direction}")
 
         if (self.current_node.direction >= NUM_POLY_SIDES):
@@ -177,11 +191,19 @@ class Walker:
 
 
     def turn_right(self):
+        '''
+        Turns the walker to the right by incrementing the current node's direction by 1.
+        '''
         print(f"Turning RIGHT! [{self.current_node.direction}] -> [{self.current_node.direction + 1}]")
         self.current_node.set_direction(self.current_node.direction + 1)
 
 
     def move(self):
+        '''
+        Moves the walker to the next target node in the current direction.
+        Updates the previous node to the current node and marks the current node as visited.
+        Appends the current node to the current path.
+        '''
         self.prev_node = self.current_node
         if self.current_node is not self.start_node:
             self.current_node.last_visited = self.current_node.targets[
@@ -192,8 +214,15 @@ class Walker:
         self.current_path.append(copy.deepcopy(self.current_node))
 
 
-#PREVNODE stuck at [2,2]
     def backtrack(self):
+        '''
+        Backtracks the walker to the previous node.
+        If the current node is not the start node, pops the last node from the current path and prints
+        the updated path.
+        If the current path is empty, sets the flag indicating all paths have been found from the start node.
+        Prints all the found paths.
+        Recursively scans from the current node again.
+        '''
         self.current_node = self.prev_node
         # print(f"Current Node is Now : [{self.current_node.location.row}][{self.current_node.location.col}]")
         if self.current_node != self.start_node :
@@ -215,6 +244,10 @@ class Walker:
         return
 
     def walk(self):
+        '''
+        Initiates the walker's traversal by scanning and moving to the next node.
+        Recursively continues the walking process.
+        '''
         self.scan()
         self.move()
         self.walk()
