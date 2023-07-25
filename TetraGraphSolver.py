@@ -1,22 +1,38 @@
 from collections import namedtuple
 import copy
+import os
 
 direction_matrix = [-1, 1, 1, -1]
 level = [[2, 1, 1], [1, 1, 2], [1, 1, 2]]
 ROW_WIDTH = 3
 COL_HEIGHT = 3
+NUM_POLY_SIDES = 4
 all_paths = [[]]
-num_poly_sides = 4
-
 
 class Node:
-    def __init__(self, value, r, c):
+    '''This class represents a node in a graph.
+
+    Attributes:
+    - last_visited: A reference to the last visited node from this node. (Default: None)
+    - value: The value of the node.
+    - visited: A boolean indicating if the node has been visited or not. (Default: False)
+    - targets: A list of nodes that can be reached from this node.
+    - location: A namedtuple representing the location of the node in the graph, with 'row' and 'col' attributes.
+    - direction: The direction of the node. (Default: 0)
+    - all_paths_found_from_here: A boolean indicating if all paths from this node have been found. (Default: False)
+
+    Methods:
+    - __repr__: Returns a string representation of the node.
+    - get_direction: Returns the direction of the node.
+    - set_direction: Sets the direction of the node.'''
+
+    def __init__(self, value, row, col):
         self.last_visited = None
         self.value = value
         self.visited = False
         self.targets = []
         Location = namedtuple('Location', ['row', 'col'])
-        self.location = Location(r, c)
+        self.location = Location(row, col)
         self.direction = 0
         self.all_paths_found_from_here = False
 
@@ -31,6 +47,34 @@ class Node:
         self.direction = value
 
 class Board:
+    """
+    This class represents a game board.
+    Attributes:
+
+    size: The size of the board (number of rows and columns).
+    graph: A dictionary representing the graph structure of the board, where the keys are the nodes and the values are the corresponding node objects.
+    obstacles: A list of nodes that represent obstacles on the board.
+    start: The starting node of the board.
+    end: The ending node of the board.
+    Methods:
+
+    init: Initializes the board object.
+    build_graph: Builds the graph structure of the board.
+    add_obstacle: Adds an obstacle to the board.
+    remove_obstacle: Removes an obstacle from the board.
+    set_start: Sets the starting node of the board.
+    set_end: Sets the ending node of the board.
+    get_node: Returns the node at a specific location on the board.
+    get_neighbors: Returns the neighbors of a given node.
+    get_distance: Returns the distance between two nodes on the board.
+    is_valid_location: Checks if a location is valid on the board.
+    is_valid_move: Checks if a move is valid on the board.
+    reset: Resets the board by clearing the visited and last_visited attributes of each node.
+    find_shortest_path: Finds the shortest path from the start node to the end node on the board using Dijkstra's algorithm.
+    mark_all_paths_found_from_start: Marks all paths from the start node as found.
+    mark_all_paths_found_from_here: Marks all paths from a given node as found.
+    generate_random_obstacles: Generates a random number of obstacles on the board.
+    """
     board = []
     target_row = 0
     target_col = 0
@@ -48,7 +92,7 @@ class Board:
         for r in range(COL_HEIGHT):
             for c in range(ROW_WIDTH):
                 for i in range(
-                        num_poly_sides
+                        NUM_POLY_SIDES
                 ):  #number of sides of polygon (square in this case, hexagon in hexbon/bee game)
                     if (i % 2) == 0:
                         self.target_row = r + self.board[r][
@@ -74,7 +118,7 @@ class Board:
     def show_targets(self):
         for r, row in enumerate(self.board):
             for c, node in enumerate(row):
-                for i in range(num_poly_sides):
+                for i in range(NUM_POLY_SIDES):
                     if self.board[r][c].targets[i] is not None:
                         node = self.board[r][c]
                         print(f"Node [{r}][{c}] -> Target {i} : [{node.targets[i].location.row}][{node.targets[i].location.col}],Value -> {node.targets[i].value}")
@@ -101,13 +145,13 @@ class Walker:
     def scan(self):
         print(f"Scanning:[{self.current_node.location.row}][{self.current_node.location.col}]: {self.current_node.direction}")
 
-        if (self.current_node.direction >= num_poly_sides):
+        if (self.current_node.direction >= NUM_POLY_SIDES):
             print("End of Path, Appending to list of Paths")
             all_paths.append(copy.deepcopy(self.current_path))
-            for idx, p in enumerate(all_paths):
-                for n in p:
-                    print(f"Printing Path[{idx}]: [{n.location.row}][{n.location.col}]")
-                print("\n")
+            #for idx, p in enumerate(all_paths):
+            #    for n in p:
+            #        print(f"Printing Path[{idx}]: [{n.location.row}][{n.location.col}]")
+            #    print("\n")
             self.backtrack()
             if self.current_node.all_paths_found_from_here:
                 exit()
@@ -150,10 +194,9 @@ class Walker:
 
 #PREVNODE stuck at [2,2]
     def backtrack(self):
-        print(f"Current Node is Now : [{self.current_node.location.row}][{self.current_node.location.col}]")
         self.current_node = self.prev_node
+        # print(f"Current Node is Now : [{self.current_node.location.row}][{self.current_node.location.col}]")
         if self.current_node != self.start_node :
-            print(f"Current Node is Now : [{self.current_node.location.row}][{self.current_node.location.col}]")
             a = self.current_path.pop()
             print(f"POPPING: : [{a.location.row}], [{a.location.col}]")
             print("After Popping, Path is: ")
@@ -163,16 +206,20 @@ class Walker:
         if len(self.current_path) == 0:
             self.current_node.all_paths_found_from_here = True
             print(f"all paths found from [{self.start_node.location.row}][{self.start_node.location.col}]")
+            for idx, p in enumerate(all_paths):
+                for n in p:
+                    print(f"Printing Path[{idx}]: [{n.location.row}][{n.location.col}]")
+                print("\n")
             return
-        else:
-            self.scan()
-            return
+        self.scan()
+        return
 
     def walk(self):
         self.scan()
         self.move()
         self.walk()
 
+os.system('clear')
 b = Board(level)
 b.display()
 b.show_targets()
