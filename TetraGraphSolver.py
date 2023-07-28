@@ -157,11 +157,11 @@ class Walker:
         the walker moves to that target node, updates the current node and path,
         and scans again.
         '''
-        print(f"Scanning:[{self.current_node.location.row}][{self.current_node.location.col}]: {self.current_node.direction}")
+        print(f"Scanning Node: [{self.current_node.location.row}][{self.current_node.location.col}] Tgt: {self.current_node.direction}")
 
         if (self.current_node.direction >= NUM_POLY_SIDES):
             print("End of Path, Appending to list of Paths")
-            all_paths.append(copy.deepcopy(self.current_path))
+            all_paths.append(self.current_path)
             #for idx, p in enumerate(all_paths):
             #    for n in p:
             #        print(f"Printing Path[{idx}]: [{n.location.row}][{n.location.col}]")
@@ -173,10 +173,8 @@ class Walker:
         elif (
                 self.current_node.targets[self.current_node.direction] is None
         ) or (self.current_node.targets[self.current_node.direction].visited):
-            print("Target null/visited")
+            print("Target null/visited\n")
             self.turn_right()
-            print(f"Node[{self.current_node.location.row}][{self.current_node.location.col}] Direction -> {self.current_node.direction}")
-            print()
             self.scan()
         else:
             print("Valid Target. Moving...")
@@ -196,6 +194,8 @@ class Walker:
         '''
         print(f"Turning RIGHT! [{self.current_node.direction}] -> [{self.current_node.direction + 1}]")
         self.current_node.set_direction(self.current_node.direction + 1)
+        print(f"Node[{self.current_node.location.row}][{self.current_node.location.col}] Direction -> {self.current_node.direction}")
+    print()
 
 
     def move(self):
@@ -224,21 +224,23 @@ class Walker:
         Recursively scans from the current node again.
         '''
         self.current_node = self.prev_node
-        # print(f"Current Node is Now : [{self.current_node.location.row}][{self.current_node.location.col}]")
+        print('\n')
+
         if self.current_node != self.start_node :
+            print(f"Backtracking to - [{self.current_path[-1].location.row}][{self.current_path[-1].location.col}] !")
             a = self.current_path.pop()
             print(f"POPPING: : [{a.location.row}], [{a.location.col}]")
-            print("After Popping, Path is: ")
+            print("After Backtrack - Path is : ")
             for idx, n in enumerate(self.current_path):
                 print(f"{idx}: [{n.location.row},{n.location.col}]")
-                print(f"Backtracking to - [{self.current_path[-1].location.row}][{self.current_path[-1].location.col}] !")
+
         if len(self.current_path) == 0:
             self.current_node.all_paths_found_from_here = True
             print(f"all paths found from [{self.start_node.location.row}][{self.start_node.location.col}]")
             for idx, p in enumerate(all_paths):
                 for n in p:
                     print(f"Printing Path[{idx}]: [{n.location.row}][{n.location.col}]")
-                print("\n")
+            print("\n")
             return
         self.scan()
         return

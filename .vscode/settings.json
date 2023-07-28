@@ -3,5 +3,9 @@
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
     "editor.fontFamily": "'Input Regular', 'Input Regular', monospace",
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+    "editor.formatOnType": true,
+    "[lisp]": {
+        "editor.wordSeparators": "`|;:'\",()"
+    }
 }
