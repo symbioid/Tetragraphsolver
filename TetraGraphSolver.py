@@ -10,9 +10,9 @@ all_paths = [[]]
 class Node:
     '''A class to represent a node in a grid.
 
-    Attributes: last_visited (Node): The previous node visited by the search algorithm. value (int): The value of the node. visited (bool): A flag to indicate whether the node has been visited or not. targets (list of Node): A list of nodes that are reachable from this node. location (namedtuple): A namedtuple with row and col attributes to store the coordinates of the node. direction (int): An integer to indicate the direction of the search algorithm (0: right, 1: down, 2: left, 3: up). all_paths_found_from_here (bool): A flag to indicate whether all possible paths from this node have been explored or not.'''
+    Attributes: last_visited (Node): The previous node visited by the search algorithm. value (int): The value of the node. visited (bool): A flag to indicate whether the node has been visited or not. targets (list of Node): A list of nodes that are reachable from this node. location (namedtuple): A namedtuple with row and col attributes to store the coordinates of the node. direction (int): An integer to indicate the direction of the search algorithm (0: right, 1: down, 2: left, 3: up). all_paths_found_from_here (bool): A flag to indicate whether all possible paths from this node have been explored or not.
 
-    Methods: init(self, value, row, col): Initializes a Node object with the given value and location. repr(self): Returns a string representation of the node value. get_direction(self): Returns the direction attribute of the node. set_direction(self, value): Sets the direction attribute of the node to the given value. “”"
+    Methods: init(self, value, row, col): Initializes a Node object with the given value and location. repr(self): Returns a string representation of the node value. get_direction(self): Returns the direction attribute of the node. set_direction(self, value): Sets the direction attribute of the node to the given value. '''
     def __init__(self, value, row, col):
         self.last_visited = None
         self.value = value
