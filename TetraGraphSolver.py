@@ -3,6 +3,8 @@ import copy
 import os
 
 direction_matrix = [-1, 1, 1, -1]
+adjacent_direction_inversion = [2, 3, 0, 1]
+# targetnode.visited_by_direction[adjacent_direction_inversion[current_node.direction]] = True then move
 level = [[2, 1, 1], [1, 1, 2], [1, 1, 2]]
 ROW_WIDTH = 3
 COL_HEIGHT = 3
@@ -35,7 +37,7 @@ class Node:
         self.location = Location(row, col)
         self.direction = 0
         self.all_paths_found_from_here = False
-
+        self.visited_by_direction = [False, False, False, False]
 
     def __repr__(self):
         return str(self.value)
@@ -138,9 +140,9 @@ class Walker:
         Adds the start node to the current path.
         '''
         self.start_node = board[row][col]
+        self.prev_node = None
         self.start_node.visited = True
         self.current_node = self.start_node
-        self.prev_node = None
         self.current_node.visited = True
         self.current_path.append(self.start_node)
 
@@ -162,17 +164,18 @@ class Walker:
         if (self.current_node.direction >= NUM_POLY_SIDES):
             print("End of Path, Appending to list of Paths")
             all_paths.append(copy.deepcopy(self.current_path))
-            #for idx, p in enumerate(all_paths):
-            #    for n in p:
-            #        print(f"Printing Path[{idx}]: [{n.location.row}][{n.location.col}]")
-            #    print("\n")
+            for idx, p in enumerate(all_paths):
+                for n in p:
+                    print(f"Printing Path[{idx}]: [{n.location.row}][{n.location.col}]")
+                print("\n")
             self.backtrack()
             if self.current_node.all_paths_found_from_here:
                 exit()
             self.turn_right()
         elif (
                 self.current_node.targets[self.current_node.direction] is None
-        ) or (self.current_node.targets[self.current_node.direction].visited):
+        ) or (self.current_node.targets[self.current_node.direction].visited_by_direction[adjacent_direction_inversion[self.current_node.direction]]) or (self.current_node.targets[self.current_node.direction] == self.start_node) :
+                    #or (self.current_node.targets[self.current_node.direction].visited):
             print("Target null/visited")
             self.turn_right()
             print(f"Node[{self.current_node.location.row}][{self.current_node.location.col}] Direction -> {self.current_node.direction}")
@@ -210,7 +213,8 @@ class Walker:
                 self.current_node.direction]
         self.current_node = self.current_node.targets[
             self.current_node.direction]
-        self.current_node.visited = True
+        self.current_node.visited_by_direction[adjacent_direction_inversion[self.prev_node.direction]] = True
+        #self.current_node.visited = True
         self.current_path.append(copy.deepcopy(self.current_node))
 
 
