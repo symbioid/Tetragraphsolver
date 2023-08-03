@@ -1,27 +1,26 @@
 from collections import namedtuple
 import copy
-import os
 
+#ADDING LAST_VISTED TO NODE DEF SO WE CAN PROPERLY RE_ROTATE TO NEXT POSITION FROM PREVIOUS (INSTEAD OF LOOPING FROM CURRENT)
 direction_matrix = [-1, 1, 1, -1]
-adjacent_direction_inversion = [2, 3, 0, 1]
-# targetnode.visited_by_direction[adjacent_direction_inversion[current_node.direction]] = True then move
 level = [[2, 1, 1], [1, 1, 2], [1, 1, 2]]
 ROW_WIDTH = 3
 COL_HEIGHT = 3
-NUM_POLY_SIDES = 4
 all_paths = [[]]
+num_poly_sides = 4
+
 
 class Node:
-    def __init__(self, value, row, col):
+    def __init__(self, value, r, c):
         self.last_visited = None
         self.value = value
         self.visited = False
         self.targets = []
         Location = namedtuple('Location', ['row', 'col'])
-        self.location = Location(row, col)
+        self.location = Location(r, c)
         self.direction = 0
         self.all_paths_found_from_here = False
-        self.visited_by_direction = [False, False, False, False]
+
 
     def __repr__(self):
         return str(self.value)
@@ -33,7 +32,6 @@ class Node:
         self.direction = value
 
 class Board:
-
     board = []
     target_row = 0
     target_col = 0
@@ -50,7 +48,9 @@ class Board:
     # Add Targets to each Node
         for r in range(COL_HEIGHT):
             for c in range(ROW_WIDTH):
-                for i in range(NUM_POLY_SIDES):
+                for i in range(
+                        num_poly_sides
+                ):  #number of sides of polygon (square in this case, hexagon in hexbon/bee game)
                     if (i % 2) == 0:
                         self.target_row = r + self.board[r][
                             c].value * direction_matrix[i]
@@ -75,7 +75,7 @@ class Board:
     def show_targets(self):
         for r, row in enumerate(self.board):
             for c, node in enumerate(row):
-                for i in range(NUM_POLY_SIDES):
+                for i in range(num_poly_sides):
                     if self.board[r][c].targets[i] is not None:
                         node = self.board[r][c]
                         print(f"Node [{r}][{c}] -> Target {i} : [{node.targets[i].location.row}][{node.targets[i].location.col}],Value -> {node.targets[i].value}")
@@ -91,31 +91,31 @@ class Walker:
     direction = 0
 
     def __init__(self, board, row, col):
+        '''we do this separate from "current_node" so we know when we backtrack to this, we can backtrack no more'''
         self.start_node = board[row][col]
-        self.prev_node = None
         self.start_node.visited = True
         self.current_node = self.start_node
+        self.prev_node = None
         self.current_node.visited = True
         self.current_path.append(self.start_node)
 
     def scan(self):
         print(f"Scanning:[{self.current_node.location.row}][{self.current_node.location.col}]: {self.current_node.direction}")
 
-        if (self.current_node.direction == NUM_POLY_SIDES-1):
+        if (self.current_node.direction >= num_poly_sides):
             print("End of Path, Appending to list of Paths")
             all_paths.append(copy.deepcopy(self.current_path))
-
             for idx, p in enumerate(all_paths):
                 for n in p:
                     print(f"Printing Path[{idx}]: [{n.location.row}][{n.location.col}]")
-                print("\n")
+            print("\n")
             self.backtrack()
-
             if self.current_node.all_paths_found_from_here:
                 exit()
             self.turn_right()
-
-        elif (self.current_node.targets[self.current_node.direction] is None) or (self.current_node.targets[self.current_node.direction].visited_by_direction[adjacent_direction_inversion[self.current_node.direction]]) or (self.current_node.targets[self.current_node.direction] == self.start_node) or(self.current_node.targets[self.current_node.direction].visited) :
+        elif (
+                self.current_node.targets[self.current_node.direction] is None
+        ) or (self.current_node.targets[self.current_node.direction].visited):
             print("Target null/visited")
             self.turn_right()
             print(f"Node[{self.current_node.location.row}][{self.current_node.location.col}] Direction -> {self.current_node.direction}")
@@ -145,41 +145,39 @@ class Walker:
                 self.current_node.direction]
         self.current_node = self.current_node.targets[
             self.current_node.direction]
-        self.current_node.visited_by_direction[adjacent_direction_inversion[self.prev_node.direction]] = True
         self.current_node.visited = True
         self.current_path.append(copy.deepcopy(self.current_node))
 
 
+#PREVNODE stuck at [2,2]
     def backtrack(self):
         print(f"Current Node is Now : [{self.current_node.location.row}][{self.current_node.location.col}]")
+        self.current_node = self.prev_node
+        self.current_node.visited = False
         if self.current_node != self.start_node :
-            print("Backtracking...")
-            self.current_node = self.prev_node
-            a = self.current_path.pop()
-            print(f"POPPING: : [{a.location.row}][{a.location.col}]")
+            print(f"Backtracking to [{self.prev_node.location.row}][{self.prev_node.location.col}]")
+
             print(f"Current Node is Now : [{self.current_node.location.row}][{self.current_node.location.col}]")
-            print(f"[{a.location.row}][{a.location.col}].visited :  {a.visited}")
+            a = self.current_path.pop()
+
+            print(f"this is node popped: {a.location.row}, {a.location.col}")
             print("After Popping, Path is: ")
             for idx, n in enumerate(self.current_path):
                 print(f"{idx}: [{n.location.row},{n.location.col}]")
 
-        if not self.current_path :
+        if len(self.current_path) == 0:  # AND direction = 4
             self.current_node.all_paths_found_from_here = True
             print(f"all paths found from [{self.start_node.location.row}][{self.start_node.location.col}]")
-            #for idx, p in enumerate(all_paths):
-            #    for n in p:
-            #        print(f"Printing Path[{idx}]: [{n.location.row}][{n.location.col}]")
-            #    print("\n")
             return
-        self.scan()
-        return
+        else:
+            self.scan()
+            return
 
     def walk(self):
         self.scan()
         self.move()
         self.walk()
 
-os.system('clear')
 b = Board(level)
 b.display()
 b.show_targets()
