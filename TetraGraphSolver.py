@@ -13,7 +13,7 @@ all_paths = [[]]
 
 class Node:
     def __init__(self, value, row, col):
-        self.last_visited = None
+        #self.last_visited = None
         self.value = value
         self.visited = False
         self.targets = []
@@ -101,10 +101,9 @@ class Walker:
     def scan(self):
         print(f"Scanning:[{self.current_node.location.row}][{self.current_node.location.col}]: {self.current_node.direction}")
 
-        if (self.current_node.direction == NUM_POLY_SIDES-1):
+        if (self.current_node.direction == NUM_POLY_SIDES):
             print("End of Path, Appending to list of Paths")
             all_paths.append(copy.deepcopy(self.current_path))
-
             for idx, p in enumerate(all_paths):
                 for n in p:
                     print(f"Printing Path[{idx}]: [{n.location.row}][{n.location.col}]")
