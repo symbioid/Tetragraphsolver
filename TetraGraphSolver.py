@@ -13,7 +13,7 @@ all_paths = [[]]
 
 class Node:
     def __init__(self, value, row, col):
-        self.last_visited = None
+        #self.last_visited = None
         self.value = value
         self.visited = False
         self.targets = []
@@ -99,26 +99,25 @@ class Walker:
         self.current_path.append(self.start_node)
 
     def scan(self):
-        if self.current_node is not None:
-            print(f"Scanning:[{self.current_node.location.row}][{self.current_node.location.col}]: {self.current_node.direction}")
+        print(f"Scanning:[{self.current_node.location.row}][{self.current_node.location.col}]: {self.current_node.direction}")
 
-            if (self.current_node.direction == NUM_POLY_SIDES):
-                print("End of Path, Appending to list of Paths")
-                all_paths.append(copy.deepcopy(self.current_path))
-                for idx, p in enumerate(all_paths):
-                    for n in p:
-                        print(f"Printing Path[{idx}]: [{n.location.row}][{n.location.col}]")
-                    print("\n")
-                self.backtrack()
+        if (self.current_node.direction == NUM_POLY_SIDES):
+            print("End of Path, Appending to list of Paths")
+            all_paths.append(copy.deepcopy(self.current_path))
+            for idx, p in enumerate(all_paths):
+                for n in p:
+                    print(f"Printing Path[{idx}]: [{n.location.row}][{n.location.col}]")
+                print("\n")
+            self.backtrack()
 
             if self.current_node.all_paths_found_from_here:
                 exit()
             self.turn_right()
 
-        elif (self.current_node.targets[self.current_node.direction] is None) or (self.current_node.targets[self.current_node.direction].visited_by_direction[adjacent_direction_inversion[self.current_node.direction]]) or (self.current_node.targets[self.current_node.direction] == self.start_node) or (self.current_node.targets[self.current_node.direction].visited) :
+        elif (self.current_node.targets[self.current_node.direction] is None) or (self.current_node.targets[self.current_node.direction].visited_by_direction[adjacent_direction_inversion[self.current_node.direction]]) or (self.current_node.targets[self.current_node.direction] == self.start_node) or(self.current_node.targets[self.current_node.direction].visited) :
             print("Target null/visited")
             self.turn_right()
-            print(f"Changing Node[{self.current_node.location.row}][{self.current_node.location.col}] Direction -> {self.current_node.direction}")
+            print(f"Node[{self.current_node.location.row}][{self.current_node.location.col}] Direction -> {self.current_node.direction}")
             print()
             self.scan()
         else:
@@ -133,41 +132,37 @@ class Walker:
             self.scan()
 
 
-    def turn_right(self) :
+    def turn_right(self):
         print(f"Turning RIGHT! [{self.current_node.direction}] -> [{self.current_node.direction + 1}]")
         self.current_node.set_direction(self.current_node.direction + 1)
 
 
-    def move(self) :
+    def move(self):
         self.prev_node = self.current_node
         if self.current_node is not self.start_node:
-            self.current_node.last_visited = self.current_node.targets[self.current_node.direction]
-            self.current_node = self.current_node.targets[self.current_node.direction]
-            self.current_node.visited_by_direction[adjacent_direction_inversion[self.prev_node.direction]] = True
-            self.current_node.visited = True
-            print("...adding to list after moving...")
-            self.current_path.append(copy.deepcopy(self.current_node))
+            self.current_node.last_visited = self.current_node.targets[
+                self.current_node.direction]
+        self.current_node = self.current_node.targets[
+            self.current_node.direction]
+        self.current_node.visited_by_direction[adjacent_direction_inversion[self.prev_node.direction]] = True
+        self.current_node.visited = True
+        self.current_path.append(copy.deepcopy(self.current_node))
 
 
-    def backtrack(self) :
-        print(f"1 Prev Node is Now : [{self.prev_node.location.row}][{self.prev_node.location.col}]")
-        print(f"1 Current Node is Now : [{self.current_node.location.row}][{self.current_node.location.col}]")
-        if self.current_node :
+    def backtrack(self):
+        print(f"Current Node is Now : [{self.current_node.location.row}][{self.current_node.location.col}]")
+        if self.current_node != self.start_node :
             print("Backtracking...")
+            self.current_node = self.prev_node
             a = self.current_path.pop()
-            self.current_node = a.last_visited
-            if a.last_visited is not None:
-                print(f"2 Prev Node is Now : [{a.last_visited.location.row}][{a.last_visited.location.col}]")
-                print(f"2 Current Node is Now : [{self.current_node.location.row}][{self.current_node.location.col}]")
-                print(f"[{a.location.row}][{a.location.col}].visited :  {a.visited}")
-                print(f"POPPING: : [{a.location.row}][{a.location.col}]")
-                print("!!! !!! After Popping, Path is !!! !!!")
-
-                for idx, n in enumerate(self.current_path):
-                    print(f"{idx}: [{n.location.row},{n.location.col}]")
+            print(f"POPPING: : [{a.location.row}][{a.location.col}]")
+            print(f"Current Node is Now : [{self.current_node.location.row}][{self.current_node.location.col}]")
+            print(f"[{a.location.row}][{a.location.col}].visited :  {a.visited}")
+            print("After Popping, Path is: ")
+            for idx, n in enumerate(self.current_path):
+                print(f"{idx}: [{n.location.row},{n.location.col}]")
 
         if not self.current_path :
-            if
             self.current_node.all_paths_found_from_here = True
             print(f"all paths found from [{self.start_node.location.row}][{self.start_node.location.col}]")
             #for idx, p in enumerate(all_paths):
