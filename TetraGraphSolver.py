@@ -31,13 +31,11 @@ class Node:
         Location = namedtuple('Location', ['row', 'col'])
         self.location = Location(row, col)
         self.id = str(row) + str(col)
-        self.last_visited_direction = 0
+        self.direction = 0
         #when building nodes - scan each outward node, add that as the "target node" for that direction on this node, and also mark that target's "visited by node" as this node - self.name = str(row){col}" for key and bool as visited value
+        self.visited_by_direction = [False, False, False, False]
+        self.visited = False
         self.visited_by_node = {}
-
-row = 0
-col = 0
-n = Node(2,2,4)
 
 
     def __repr__(self):
