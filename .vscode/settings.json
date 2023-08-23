@@ -2,10 +2,12 @@
     "python.pythonPath": "/usr/bin/python3",
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
-    "editor.fontFamily": "'Input Regular', 'Input Regular', monospace",
+    "editor.fontFamily": "'Inconsolata Nerd Font Mono', 'Input Regular', monospace",
     "cmake.configureOnOpen": false,
     "editor.formatOnType": true,
     "[lisp]": {
         "editor.wordSeparators": "`|;:'\",()"
-    }
+    },
+    "editor.fontSize": 18,
+    "scm.inputFontSize": 14
 }

@@ -11,31 +11,21 @@ COL_HEIGHT = 3
 NUM_POLY_SIDES = 4
 all_paths = [[]]
 
-# class Node:
-#     def __init__(self, value, row, col):
-#         #self.last_visited = None
-#         self.value = value
-#         self.visited = False
-#         self.targets = []
-#         Location = namedtuple('Location', ['row', 'col'])
-#         self.location = Location(row, col)
-#         self.direction = 0
-#         self.all_paths_found_from_here = False
-#         self.visited_by_direction = [False, False, False, False]
-
-
 class Node:
     def __init__(self, value, row, col):
         self.value = value
         self.targets = []
         Location = namedtuple('Location', ['row', 'col'])
         self.location = Location(row, col)
-        self.id = str(row) + str(col)
+        self.ident = str(row) + str(col)
         self.direction = 0
-        #when building nodes - scan each outward node, add that as the "target node" for that direction on this node, and also mark that target's "visited by node" as this node - self.name = str(row){col}" for key and bool as visited value
+        # "visited_by_node" is a dictionary of nodes that have visited this node
+        # After first pass of board build, follow each node's edges to the targets, then...
+        # Insert current_node.ident into target_node.visited_by_node and value of True
+        self.visited_by_node = {}
         self.visited_by_direction = [False, False, False, False]
         self.visited = False
-        self.visited_by_node = {}
+        self.all_paths_found_from_here = False
 
 
     def __repr__(self):
