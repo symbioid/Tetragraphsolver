@@ -5,7 +5,7 @@
     "[lisp]": {
         "editor.wordSeparators": "`|;:'\",()"
     },
-    "editor.fontSize": 12,
+    "editor.fontSize": 16,
     "scm.inputFontSize": 14,
     "python.analysis.autoImportCompletions": true
 }
