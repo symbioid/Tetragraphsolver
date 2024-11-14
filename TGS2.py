@@ -4,7 +4,7 @@ import copy
 import os
 import sys
 import networkx as nx
-import scipy
+
 G = nx.DiGraph()
 
 direction_matrix = [-1, 1, 1, -1]
@@ -46,7 +46,6 @@ class Board:
             for c, value in enumerate(row):
                 board_row.append(Node(value, r, c))
             self.board.append(board_row)
-
         # Add Targets to each Node
         for r in range(COL_HEIGHT):
             for c in range(ROW_WIDTH):
@@ -87,8 +86,10 @@ class Board:
         #    print(*row)
         # for j, col in enumerate(row):
         #    print(descendants(G, self.board[i][j].ident))
+        c = 0
         for i, g in G.out_edges:
-            print(f"G.out_edges ({i}): {g}")
+            print(f"G.out_edges {i} ->{c} {g}")
+            c = c + 1
 
     def show_targets(self):
         for r, row in enumerate(self.board):
@@ -117,8 +118,8 @@ class Walker:
         self.start_node.visited = True
         self.current_node = self.start_node
         self.current_path.append(self.start_node)
+        # print(f"{self.start_node.ident}")
 
-    #        print(f"{self.start_node.ident}")
     #        print(f"Graph: {G.nodes}")
 
     def scan(self):
@@ -193,7 +194,7 @@ class Walker:
             # Append Current Direction to Node Before Move.
 
             self.current_node = copy.deepcopy(self.prev_node)
-            a = self.current_path.pop()
+            #   a = self.current_path.pop()
             # print(f"POPPING: : [{a.location.row}][{a.location.col}]")
             self.current_node.visited = True
             # print("After Popping, Path is: ")
